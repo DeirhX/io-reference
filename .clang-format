@@ -1,0 +1,18 @@
+BasedOnStyle: Microsoft
+AlignAfterOpenBracket: Align
+AlwaysBreakTemplateDeclarations: 'Yes'
+BreakBeforeBraces: Allman
+IndentWrappedFunctionNames: 'true'
+NamespaceIndentation: Inner
+PointerAlignment: Left
+ColumnLimit: 180
+UseTab: Never
+
+AlignOperands: true
+AlignTrailingComments: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortBlocksOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
