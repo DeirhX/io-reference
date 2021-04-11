@@ -31,9 +31,9 @@ class MemoryReader : public virtual MemoryStorage, public IDataReader
 
     size_t Read(std::vector<std::byte>& out_data, size_t count) override
     {
-        /* Read only as much there is no read. */
+        /* Read only as much there is to read. Stream readers are expected to return less bytes than requested if no more are ready at this time */
         count = std::min(count, buffer.size() - position);
-        /* resize does *not* release extra memory, there will be no reallocation once buffer grows large enough (unless shrink_to_fit is used)*/
+        /* resize() does *not* release extra memory, there will be no reallocation once buffer grows large enough (unless shrink_to_fit is used) */
         out_data.resize(count);
         std::copy_n(buffer.begin() + position, count, out_data.begin());
         position += count;
@@ -57,6 +57,7 @@ class MemoryWriter : public virtual MemoryStorage, public IDataWriter
 
     void Write(std::span<const std::byte> data) override
     {
+        /* Writing past end-of-buffer should throw - in contrast to writing to file which can be extended as long there is enough space */
         if (data.size() > buffer.size() - position)
             throw std::exception("Attempted to write past the end of non-resizable buffer");
         std::copy_n(data.begin(), data.size(), buffer.begin() + position);

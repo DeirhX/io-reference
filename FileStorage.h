@@ -48,6 +48,8 @@ class FileReader : public virtual FileStorage, public IDataReader
         /* resize does *not* release extra File, there will be no reallocation once buffer grows large enough (unless shrink_to_fit is used)*/
         out_data.resize(count);
         file_stream.read(&out_data.front(), count);
+        if (file_stream.bad())
+            throw std::exception("Failed to read from file");
         out_data.resize(file_stream.gcount()); /* bytes actually read */
         return out_data.size();;
     }
