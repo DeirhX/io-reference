@@ -58,6 +58,16 @@ int main()
         readwrite.Read(read_buf, readwrite.GetSize());
         print_to_console(read_buf);
     }
+
+    /* Test conversion to common interface */
+    auto read_and_print = [=](IDataReader& reader) {
+        auto read_buf = std::vector<std::byte>{};
+        reader.Read(read_buf, 11);
+        print_to_console(read_buf);
+    };
+
+    auto file_reader = FileReader("test.bin");
+    read_and_print(file_reader);
 }
 
 
