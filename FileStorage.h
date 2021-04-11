@@ -51,6 +51,11 @@ class FileReader : public virtual FileStorage, public IDataReader
         out_data.resize(file_stream.gcount()); /* bytes actually read */
         return count;
     }
+    size_t Read(std::span<std::byte> out_data) override
+    {
+        file_stream.read(&out_data.front(), out_data.size());
+        return file_stream.gcount();
+    }
 };
 
 class FileWriter : public virtual FileStorage, public IDataWriter
@@ -58,7 +63,7 @@ class FileWriter : public virtual FileStorage, public IDataWriter
   public:
     FileWriter(const char* file_name) : FileStorage(file_name, OpenFlags::Write) {}
 
-    void Write(const std::vector<std::byte>& data) override
+    void Write(std::span<const std::byte> data) override
     {
         file_stream.write(&data.front(), data.size());
         if (!file_stream.good())

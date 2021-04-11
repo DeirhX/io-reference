@@ -40,6 +40,13 @@ class MemoryReader : public virtual MemoryStorage, public IDataReader
 
         return count;
     }
+    size_t Read(std::span<std::byte> out_data) override
+    {
+        const auto count = std::min(out_data.size(), buffer.size() - position);
+        std::copy_n(buffer.begin() + position, count, out_data.begin());
+        position += count;
+        return count;
+    }
 };
 
 class MemoryWriter : public virtual MemoryStorage, public IDataWriter
@@ -48,7 +55,7 @@ class MemoryWriter : public virtual MemoryStorage, public IDataWriter
     /* Inherit all constructors */
     using MemoryStorage::MemoryStorage;
 
-    void Write(const std::vector<std::byte>& data) override
+    void Write(std::span<const std::byte> data) override
     {
         if (data.size() > buffer.size() - position)
             throw std::exception("Attempted to write past the end of non-resizable buffer");

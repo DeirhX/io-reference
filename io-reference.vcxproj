@@ -144,8 +144,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Homework.cpp" />
-    <ClCompile Include="Interface.h" />
-    <ClCompile Include="MemoryStorage.h" />
+    <ClInclude Include="Interface.h" />
+    <ClInclude Include="MemoryStorage.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
