@@ -49,7 +49,7 @@ class FileReader : public virtual FileStorage, public IDataReader
         out_data.resize(count);
         file_stream.read(&out_data.front(), count);
         out_data.resize(file_stream.gcount()); /* bytes actually read */
-        return count;
+        return out_data.size();;
     }
     size_t Read(std::span<std::byte> out_data) override
     {
