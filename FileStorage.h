@@ -8,19 +8,21 @@
 class FileStorage : public ISeekable
 {
   protected:
-    std::basic_fstream<std::byte> file_stream;
-    size_t file_size;
     enum OpenFlags
     {
         Read = 0x1,
         Write = 0x2,
     };
 
+    std::basic_fstream<std::byte> file_stream;
+    size_t file_size;
+    OpenFlags mode;
   public:
     FileStorage(const char* file_name, OpenFlags operation)
         : file_stream(file_name, ((operation & OpenFlags::Read) ? std::ios_base::in : 0) |
                                       ((operation & OpenFlags::Write) ? std::ios_base::out : 0) |
-                                      std::ios_base::binary)
+                                      std::ios_base::binary),
+          mode(operation)
     {
         assert(operation != 0);
         if (!file_stream.is_open() || !file_stream.good())
@@ -30,8 +32,8 @@ class FileStorage : public ISeekable
 
     virtual void Seek(size_t new_position)
     {
-        file_stream.seekg(new_position);
-        file_stream.seekp(new_position);
+        if (mode & OpenFlags::Read)  file_stream.seekg(new_position);
+        if (mode & OpenFlags::Write) file_stream.seekp(new_position);
     }
     [[nodiscard]] virtual size_t GetSize() { return file_size; }
 };
@@ -39,8 +41,7 @@ class FileStorage : public ISeekable
 class FileReader : public virtual FileStorage, public IDataReader
 {
   public:
-    /* Inherit all constructors */
-    using FileStorage::FileStorage;
+    FileReader(const char* file_name) : FileStorage(file_name, OpenFlags::Read) {}
 
     size_t Read(std::vector<std::byte>& out_data, size_t count) override
     {
@@ -55,8 +56,7 @@ class FileReader : public virtual FileStorage, public IDataReader
 class FileWriter : public virtual FileStorage, public IDataWriter
 {
   public:
-    /* Inherit all constructors */
-    using FileStorage::FileStorage;
+    FileWriter(const char* file_name) : FileStorage(file_name, OpenFlags::Write) {}
 
     void Write(const std::vector<std::byte>& data) override
     {
@@ -69,6 +69,8 @@ class FileWriter : public virtual FileStorage, public IDataWriter
 class FileReaderWriter : public FileReader, public FileWriter
 {
   public:
-    /* Could use FileReader as well, both lead to same virtual class */
-    using FileWriter::FileWriter;
+    /* Note this will initialize the virtual base once and correctly, calling the other constructors won't reinitialize it */
+    FileReaderWriter(const char* file_name) : FileStorage(file_name, OpenFlags(OpenFlags::Read | OpenFlags::Write)),
+                                              FileReader(file_name),
+                                              FileWriter(file_name) {}
 };
