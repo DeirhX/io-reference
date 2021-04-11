@@ -19,8 +19,8 @@ class MemoryStorage : public ISeekable
     MemoryStorage(std::vector<std::byte>& source_data) : buffer(source_data) {}
     MemoryStorage(std::byte* source_data, size_t data_size) : buffer(source_data, data_size) { assert(source_data); }
 
-    virtual void Seek(size_t new_position) { this->position = new_position; }
-    [[nodiscard]] virtual size_t GetSize() { return this->position; }
+    virtual void Seek(size_t new_position) { position = new_position; }
+    [[nodiscard]] virtual size_t GetSize() { return buffer.size(); }
 };
 
 class MemoryReader : public virtual MemoryStorage, public IDataReader
@@ -32,7 +32,7 @@ class MemoryReader : public virtual MemoryStorage, public IDataReader
     size_t Read(std::vector<std::byte>& out_data, size_t count) override
     {
         /* Read only as much there is no read. */
-        count = std::min(count, buffer.size() - (position + count));
+        count = std::min(count, buffer.size() - position);
         /* resize does *not* release extra memory, there will be no reallocation once buffer grows large enough (unless shrink_to_fit is used)*/
         out_data.resize(count);
         std::copy_n(buffer.begin() + position, count, out_data.begin());

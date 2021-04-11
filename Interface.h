@@ -8,7 +8,7 @@ class IDataReader
     /* Virtual destructor ensures correct destructor would always be called on polymorphic delete */
     virtual ~IDataReader() = default;
     /* Returning a vector would mean an allocation would happen on every read. That would not be the C++ way. */
-    virtual size_t Read(std::vector<std::byte>& data, size_t count) = 0;
+    virtual size_t Read(std::vector<std::byte>& out_data, size_t count) = 0;
     /* Seeking not supported in network traffic, will not be part of this base interface */
 };
 
