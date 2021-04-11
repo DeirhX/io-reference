@@ -31,7 +31,8 @@ class MemoryReader : public virtual MemoryStorage, public IDataReader
 
     size_t Read(std::vector<std::byte>& out_data, size_t count) override
     {
-        /* Read only as much there is to read. Stream readers are expected to return less bytes than requested if no more are ready at this time */
+        /* Read only as much there is to read. I choose not to throw an exception here and stream readers are expected to return less bytes than requested
+         * if no more are ready at this time. But throwing can be easily justified just as well. */
         count = std::min(count, buffer.size() - position);
         /* resize() does *not* release extra memory, there will be no reallocation once buffer grows large enough (unless shrink_to_fit is used) */
         out_data.resize(count);
